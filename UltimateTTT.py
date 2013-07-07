@@ -1,8 +1,9 @@
 from UTTTMenu import Menu
 
-if __name__ == "main":
+if __name__ == "__main__":
 	# Print out the title card
 	# List the possible commands
 	# Accept command input
 	# Run command
-	Menu.runMenu()
+	menu = Menu()
+	menu.runMenu()
