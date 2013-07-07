@@ -13,7 +13,7 @@ class Game:
 				[0,4,8], [2,4,6]]
 		for row in rows:
 			for space in row:
-				if self.board.getSquare(space) != self.playerIcons[self.currentPlayer]:
+				if self.board.getSquare(space+1) != self.playerIcons[self.currentPlayer]:
 					break
 			else:
 				return True
@@ -50,6 +50,7 @@ class Game:
 			self.board = self.multiBoard.getBoard(boardChoice)
 		while True:
 			self.showBoard()
+			print "The current board is %s" % self.board.getNumber()
 			print "It is player %s's turn" % self.currentPlayer
 			print "Please choose a space."
 
@@ -66,11 +67,13 @@ class Game:
 				print "Chosen space is not available"
 				continue
 			else:
-				"Player %s chooses space %s on board %s" % \
-				(self.currentPlayer, space, self.board)
+				print "Player %s chooses space %s on board %s" % \
+				(self.currentPlayer, space, self.board.getNumber())
 				self.makeMove(space)
 				if self.detectBoardWin():
-					self.wins[currentPlayer] += 1
+					print "Player %s has won board %s" % (self.currentPlayer, 
+						self.board.getNumber())
+					self.wins[self.currentPlayer] += 1
 
 			if self.wins[self.currentPlayer] >= 5:
 				print "Player %s has won!" % self.currentPlayer
@@ -90,11 +93,11 @@ class Game:
 				line += "  "
 			return line
 
-		for cRange in [[1,4], [4, 7], [5, 8]]:
+		for cRange in [[1,4], [4, 7], [7, 10]]:
 			printRange = range(cRange[0], cRange[1])
 			print " %s     %s     %s" \
 				% (printRange[0], printRange[1], printRange[2])
-			for rRange in [[1,4], [4, 7], [5, 8]]:
+			for rRange in [[1,4], [4, 7], [7, 10]]:
 				print makeLine(cRange, rRange)
 			print ""
 
