@@ -12,7 +12,7 @@ class Game:
 		rows = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8],
 				[0,4,8], [2,4,6]]
 		for row in rows:
-			for space in rows:
+			for space in row:
 				if self.board.getSquare(space) != self.playerIcons[self.currentPlayer]:
 					break
 			else:
@@ -31,10 +31,7 @@ class Game:
 		return False
 
 	def makeMove(self, space):
-		if self.board.getSquare(space) != None:
-			print "That space has already been taken!"
-		else:
-			self.board.changeSquare(player, square)
+		self.board.changeSquare(self.currentPlayer, space)
 
 	def runGame(self):
 		# List options for the player
@@ -43,7 +40,7 @@ class Game:
 		# Return representation of board to console
 		# If one player wins, print and return to menu
 		self.showBoard()
-		print "Player %s please choose a board" % self.currentPlayer
+		print "Player %s please choose a starting board" % self.currentPlayer
 		boardChoice = raw_input()
 		if boardChoice not in map(str, range(1,10)):
 			print "That is not an available board.  Choices are 1 to 9"
@@ -53,6 +50,7 @@ class Game:
 			self.board = self.multiBoard.getBoard(boardChoice)
 		while True:
 			self.showBoard()
+			print "It is player %s's turn" % self.currentPlayer
 			print "Please choose a space."
 
 			space = raw_input()
@@ -72,9 +70,9 @@ class Game:
 				(self.currentPlayer, space, self.board)
 				self.makeMove(space)
 				if self.detectBoardWin():
-					self.wins[currentPlayer]
+					self.wins[currentPlayer] += 1
 
-			if self.wins[currentPlayer] >= 5:
+			if self.wins[self.currentPlayer] >= 5:
 				print "Player %s has won!" % self.currentPlayer
 				break
 
@@ -89,12 +87,16 @@ class Game:
 				board = self.multiBoard.getBoard(i)
 				for j in range(rRange[0], rRange[1]):
 					line += board.getSquare(j)
-				line += " "
+				line += "  "
 			return line
 
 		for cRange in [[1,4], [4, 7], [5, 8]]:
+			printRange = range(cRange[0], cRange[1])
+			print " %s     %s     %s" \
+				% (printRange[0], printRange[1], printRange[2])
 			for rRange in [[1,4], [4, 7], [5, 8]]:
 				print makeLine(cRange, rRange)
+			print ""
 
 
 

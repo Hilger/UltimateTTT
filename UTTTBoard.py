@@ -11,9 +11,10 @@ class MultiBoard:
 class SingleBoard:
     def __init__(self):
         self.singleBoard = ["-" for i in range(0,9)]
+        self.playerIcons = {1: "X", 2 : "O"}
 
     def changeSquare(self, player, square):
-        self.singleBoard[square-1] = [player]
+        self.singleBoard[square-1] = self.playerIcons[player]
 
     def getSquare(self, square):
         return self.singleBoard[square-1]
