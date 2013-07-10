@@ -40,7 +40,7 @@ class GameCmd(Cmd):
                 print "Player %s has chosen board %s" % \
                 (self.game.currentPlayer, board)
                 print "Please choose a space with \"mark [1-9]\" now"
-                self.game.board = board
+                self.game.board = self.game.multiBoard.getBoard(board)
                 self.chooseLock = True
                 self.started = True
 
@@ -69,11 +69,11 @@ class GameCmd(Cmd):
                         print "Player %s has won the game!" % \
                         self.game.currentPlayer
 
-                self.game.board = square
+                self.game.board = self.game.multiBoard.getBoard(square)
                 self.game.currentPlayer = 1 if self.game.currentPlayer == 2 \
                 else 1
 
-                if self.game.detectBoardFilled():
+                if self.game.checkBoardFilled():
                     print "Player %s was sent to a full board and must choose \
                     a new one"
                     self.chooseLock = False
@@ -146,7 +146,7 @@ class Game:
         self.wins = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
 
     def detectBoardWin(self):
-        if self.wins[board]:
+        if self.wins[self.board.getNumber()]:
             return False
         rows = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8],
                 [0,4,8], [2,4,6]]
