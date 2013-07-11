@@ -9,7 +9,7 @@ class MenuCmd(Cmd):
         newgame -- begins a game of Ultimate Tic Tac Toe\n\
         rules -- display the rules of Ultimate Tic Tac Toe\n\
         exit -- exit the program"
-        self.intro = "Ultimate Tic Tac Toe\n" + self
+        self.intro = "Ultimate Tic Tac Toe\n" + self.commands
 
     def do_newgame(self, args):
         newgame = GameCmd()
@@ -114,8 +114,9 @@ class GameCmd(Cmd):
         args = args.split()
         if len(args) > 1:
             print "***Incorrect number of arguments"
-        elif args[0] == "":
+        elif len(args) == 0:
             self.game.multiBoard.show()
+            return
         elif args[0] in range(1,10):
             self.game.multiBoard.getBoard(args[0]).show()
         else:
