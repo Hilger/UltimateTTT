@@ -19,19 +19,27 @@ class GameCmd(Cmd):
         self.game = Game()
         self.chooseLock = False
         self.wonLock = False
+        self.drawLock = False
         self.prompt = "UTTT/Game: "
 
     def do_choose(self, args):
         if self.wonLock:
-            print "***Game was won by Player %s.\n \
-            Type \"exit\" to exit the program or type \"newgame\" \
-            for a new game."
+            print "***Game was won by Player %s.\n" + \
+            "Type \"exit\" to exit the program or type \"newgame\"" +\
+            " for a new game."
+            return
+        if self.drawLock:
+            print "***Game ended in a draw\n" + \
+            "Type \"exit\" to exit the program or type \"newgame\"" + \
+            " for a new game."
             return
         if self.chooseLock:
-            print "***You may not choose a board at this time."
+            print "***You may not choose a board at this time. Use" + \
+            " \"mark[1-9]\" to mark a square instead."
             return
         if not args:
-            print "***choose command must include a number between 1-9 as an argument"
+            print "***choose command must include a number" \
+            + "between 1-9 as an argument"
             return
         else:
             board = args.split()[0] 
@@ -55,15 +63,21 @@ class GameCmd(Cmd):
 
     def do_mark(self, args):
         if self.wonLock:
-            print "***Game was won by Player %s.\n \
-            Type \"exit\" to exit the program or type \"newgame\" \
-            for a new game."
+            print "***Game was won by Player %s.\n" + \
+            "Type \"exit\" to exit the program or type \"newgame\"" +\
+            " for a new game."
+            return
+        if self.drawLock:
+            print "***Game ended in a draw\n" + \
+            "Type \"exit\" to exit the program or type \"newgame\"" + \
+            " for a new game."
             return
         if not self.chooseLock:
             print "***Please choose a board with \"choose [1-9]\" first."
             return
         if not args:
-            print "***mark command must include a number between 1-9 as an argument"
+            print "***mark command must include a number between" + \
+            " 1-9 as an argument"
             return
         square = args.split()[0]
         try:
@@ -84,21 +98,35 @@ class GameCmd(Cmd):
                 print "Player %s has won board %s!" % \
                 (self.game.currentPlayer, self.game.board.getNumber())
 
-                if self.game.detectPlayerWin():
-                    print "Player %s has won the game!" % \
-                    self.game.currentPlayer
-                    print "Final score -- Player 1: %s, Player 2: %s" \
-                    % (self.game.countWins(1), self.game.countWins(2))
-                    self.wonLock = True
-                    return
+            elif self.game.detectBoardDraw() and self.game.board.getNumber()\
+            not in self.game.draws:
+                print "Board %s has ended in a draw" % self.game.board
+                self.game.draws.append(self.game.board.getNumber())
+
+            if self.game.detectPlayerWin():
+                print "Player %s has won the game!" % \
+                self.game.currentPlayer
+                print "Final score -- Player 1: %s, Player 2: %s, Draws: %s" \
+                % (self.game.countWins(1), self.game.countWins(2), 
+                   len(self.game.draws))
+                self.wonLock = True
+                return
+
+            elif self.game.detectDrawnGame():
+                print "Game has ended in a draw"
+                print "Final score -- Player 1: %s, Player 2: %s, Draws: %s" \
+                % (self.game.countWins(1), self.game.countWins(2), 
+                   len(self.game.draws))
+                self.drawLock = True
+                return
 
             self.game.board = self.game.multiBoard.getBoard(square)
             self.game.currentPlayer = 1 if self.game.currentPlayer == 2 \
             else 2
 
             if self.game.checkBoardFilled():
-                print "Player %s was sent to a full board and must choose a new one" \
-                % self.game.currentPlayer
+                print "Player %s was sent to a full board" \
+                % self.game.currentPlayer + " and must choose a new one"
                 self.chooseLock = False
 
     def do_show(self, args):
@@ -116,8 +144,19 @@ class GameCmd(Cmd):
                 print "***Number must be between 1-9"
         except:
             if args[0] == "scores":
-                print "Player 1 has won %s boards" % self.game.countWins(1)
-                print "Player 2 has won %s boards" % self.game.countWins(2)
+                print "Player 1 won boards: " + self.game.getWinsString(1) 
+                print "Player 2 won boards: " + self.game.getWinsString(2)
+                print "Drawn boards: " + self.game.getDrawsString()
+                print "Remaining boards: " + self.game.getRemainingString()
+                if self.game.countWins(1) > self.game.countWins(2):
+                    print "Player 1 is winning %s-%s" % \
+                    (self.game.countWins(1), self.game.countWins(2))
+                elif self.game.countWins(2) > self.game.countWins(1):
+                    print "Player 2 is winning %s-%s" % \
+                    (self.game.countWins(2), self.game.countWins(1))
+                else:
+                    print "Game is tied %s-%s" % \
+                    (self.game.countWins(2), self.game.countWins(1))
             elif args[0] == "commands":
                 print self.commands
             elif args[0] == "rules":
@@ -168,7 +207,7 @@ class MultiBoard:
 class SingleBoard:
     def __init__(self, n):
         self.singleBoard = ["-" for i in range(1,10)]
-        self.playerIcons = {1: "X", 2 : "O"}
+        self.playerIcons = {0: "-", 1: "X", 2 : "O"}
         self.boardNumber = n
 
     def changeSquare(self, player, square):
@@ -179,6 +218,14 @@ class SingleBoard:
 
     def getNumber(self):
         return self.boardNumber
+
+    def countSpacesFilled(self):
+        return 9 - singleBoard.count("-")
+
+    def getEmptySquare(self):
+        for i,j in enumerate(self.singleBoard):
+            if j == "-":
+                return i
 
     def show(self): 
         print "Board #%s\n" % self.boardNumber
@@ -195,8 +242,9 @@ class Game:
         self.started = False
         self.currentPlayer = 1
         self.board = None
-        self.playerIcons = {1: "X", 2 : "O"}
+        self.playerIcons = {0 : "-", 1 : "X", 2 : "O"}
         self.wins = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
+        self.draws = []
 
     def detectBoardWin(self):
         if self.wins[self.board.getNumber()]:
@@ -213,8 +261,33 @@ class Game:
                 return True
         return False
 
+    def detectBoardDraw(self):
+        if self.board.countSpacesFilled() == 9:
+            if not self.detectBoardWin():
+                return True
+        elif self.board.countSpacesfilled() == 8:
+            emptysquare = self.board.getEmptySquare()
+            self.board.changeSquare(1, emptysquare)
+            if self.detectBoardWin():
+                self.board.changeSquare(0, emptysquare)
+                return False
+            self.board.changeSquare(2, emptysquare)
+            if self.detectBoardWin():
+                self.board.changeSquare(0, emptysquare)
+                return False
+            self.board.changeSquare(0, emptysquare)
+            return True
+        return False
+
+    def detectDrawnGame(self):
+        if self.countWins(1) == self.countwins(2) and \
+        len(self.draws) + self.countWins(1) + self.countWins(2) == 9:
+            return True
+        return False 
+
     def detectPlayerWin(self):
-        if self.wins.values().count(self.currentPlayer) >= 5:
+        if self.wins.values().count(self.currentPlayer) > \
+        (9 - len(self.draws)_ / 2: 
             return True
         return False
 
@@ -234,6 +307,24 @@ class Game:
 
     def makeMove(self, square):
         self.board.changeSquare(self.currentPlayer, square)
+
+    def getDrawsString(self):
+        if self.draws:
+            return ", ".join(self.draws)
+        return "None"
+
+    def getWinsString(self, player):
+        playerWins = [k for k,v in self.items() if v == player]
+        if playerWins:
+            return ", ".join(playerWins)
+        return "None"
+
+    def getRemainingString(self):
+        remaining = [i for i in range(1,10) if i not in self.draws
+            and i not in [k for k,v in self.items() if v == player]
+        if remaining:
+            return ", ".join(remaining)
+        return "None"
 
 if __name__ == "__main__":
     game = GameCmd()
