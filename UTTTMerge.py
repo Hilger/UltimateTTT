@@ -229,13 +229,13 @@ class SingleBoard:
     def getNumber(self):
         return self.boardNumber
 
-    def countSpacesFilled(self):
+    def countSquaresFilled(self):
         return 9 - self.singleBoard.count("-")
 
     def getEmptySquare(self):
         for i,j in enumerate(self.singleBoard):
             if j == "-":
-                return i
+                return i+1
 
     def show(self): 
         print "Board #%s\n" % self.boardNumber
@@ -272,10 +272,10 @@ class Game:
         return False
 
     def detectBoardDraw(self):
-        if self.board.countSpacesFilled() == 9:
+        if self.board.countSquaresFilled() == 9:
             if not self.detectBoardWin():
                 return True
-        elif self.board.countSpacesFilled() == 8:
+        elif self.board.countSquaresFilled() == 8:
             emptysquare = self.board.getEmptySquare()
             self.board.changeSquare(1, emptysquare)
             if self.detectBoardWin():
