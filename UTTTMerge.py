@@ -97,7 +97,8 @@ class GameCmd(Cmd):
             print "Player %s chose square %s on board %s" \
             % (self.game.currentPlayer, square, self.game.board.getNumber())
 
-            if self.game.detectBoardWin():
+            if self.game.detectBoardWin() and not \
+            self.game.wins[self.game.board.getNumber()]:
                 print "Player %s has won board %s!" % \
                     (self.game.currentPlayer, self.game.board.getNumber())
                 self.game.wins[self.game.board.getNumber()] \
@@ -259,8 +260,6 @@ class Game:
         self.draws = []
 
     def detectBoardWin(self):
-        if self.wins[self.board.getNumber()]:
-            return False
         rows = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8],
                 [0,4,8], [2,4,6]]
         for row in rows:
