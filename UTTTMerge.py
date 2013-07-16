@@ -52,7 +52,7 @@ class GameCmd(Cmd):
         if board not in range(1,10):
             print "***You must choose a number between 1-9"
         else:
-            if self.game.started and self.game.checkBoardFilled():
+            if self.game.started and self.game.checkBoardFilled(board):
                 print "***Board is full. Please choose another."
             else:
                 self.do_show(str(board))
@@ -90,8 +90,7 @@ class GameCmd(Cmd):
         if square not in range(1,10):
             print "***You must choose a number between 1-9"
         elif self.game.checkSquareFilled(square):
-            print "***Chosen space is not available.  \
-            Please choose another."
+            print "***Chosen space is not available. Please choose another."
         else:
             self.game.makeMove(square)
             self.do_show(args="")
@@ -100,10 +99,13 @@ class GameCmd(Cmd):
 
             if self.game.detectBoardWin():
                 print "Player %s has won board %s!" % \
-                (self.game.currentPlayer, self.game.board.getNumber())
+                    (self.game.currentPlayer, self.game.board.getNumber())
+                self.game.wins[self.game.board.getNumber()] \
+                    = self.game.currentPlayer
 
             elif self.game.detectBoardDraw() and self.game.board.getNumber()\
-            not in self.game.draws:
+            not in self.game.draws \
+            and not self.game.wins[self.game.board.getNumber()]:
                 print "Board %s has ended in a draw" \
                 % self.game.board.getNumber()
                 self.game.draws.append(self.game.board.getNumber())
@@ -131,7 +133,7 @@ class GameCmd(Cmd):
             print "Current board: %s" % self.game.board.getNumber()
             print "It is now player %s's turn" % self.game.currentPlayer
 
-            if self.game.checkBoardFilled():
+            if self.game.checkBoardFilled(self.game.board.getNumber()):
                 print "Player %s was sent to a full board" \
                 % self.game.currentPlayer + " and must choose a new one"
                 self.chooseLock = False
@@ -267,7 +269,6 @@ class Game:
                 != self.playerIcons[self.currentPlayer]:
                     break
             else:
-                self.wins[self.board.getNumber()] = self.currentPlayer
                 return True
         return False
 
@@ -304,9 +305,10 @@ class Game:
     def countWins(self, player):
         return self.wins.values().count(player)
 
-    def checkBoardFilled(self):
+    def checkBoardFilled(self, board):
+        board = self.multiBoard.getBoard(board)
         if any(map(lambda x: x == "-", 
-        [self.board.getSquare(square) for square in range(1, 10)])):
+        [board.getSquare(square) for square in range(1, 10)])):
             return False
         return True
 
