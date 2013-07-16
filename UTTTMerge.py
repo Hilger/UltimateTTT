@@ -12,6 +12,7 @@ class GameCmd(Cmd):
         show rules -- show the rules of Ultimate Tic Tac Toe\n\
         show scores -- show the players' scores\n\
         show commands -- list commands\n\
+        show current -- show current board and player\n\
         show players -- show player icons\n\
         newgame -- start a new game\n\
         exit -- exit the program"
@@ -97,8 +98,7 @@ class GameCmd(Cmd):
             print "Player %s chose square %s on board %s" \
             % (self.game.currentPlayer, square, self.game.board.getNumber())
 
-            if self.game.detectBoardWin() and not \
-            self.game.wins[self.game.board.getNumber()]:
+            if self.game.detectBoardWin():
                 print "Player %s has won board %s!" % \
                     (self.game.currentPlayer, self.game.board.getNumber())
                 self.game.wins[self.game.board.getNumber()] \
@@ -171,6 +171,12 @@ class GameCmd(Cmd):
                 print self.commands
             elif args[0] == "rules":
                 pass
+            elif args[0] == "current":
+                if self.game.started:
+                    print "It is player %s's turn" % self.game.currentPlayer
+                    print "Current board: %s" % self.game.board.getNumber()
+                else:
+                    print "Game has not started yet"
             elif args[0] == "players":
                 print "Player 1: X"
                 print "Player 2: O"
