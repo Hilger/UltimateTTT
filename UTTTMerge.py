@@ -98,7 +98,7 @@ class GameCmd(Cmd):
             print "Player %s chose square %s on board %s" \
             % (self.game.currentPlayer, square, self.game.board.getNumber())
 
-            if self.game.detectBoardWin() \
+            if self.game.detectBoardWin(self.game.currentPlayer) \
             and not self.game.wins[self.game.board.getNumber()]:
                 print "Player %s has won board %s!" % \
                     (self.game.currentPlayer, self.game.board.getNumber())
@@ -266,13 +266,13 @@ class Game:
         self.wins = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
         self.draws = []
 
-    def detectBoardWin(self):
+    def detectBoardWin(self, player):
         rows = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8],
                 [0,4,8], [2,4,6]]
         for row in rows:
             for square in row:
                 if self.board.getSquare(square+1) \
-                != self.playerIcons[self.currentPlayer]:
+                != self.playerIcons[player]:
                     break
             else:
                 return True
@@ -280,16 +280,17 @@ class Game:
 
     def detectBoardDraw(self):
         if self.board.countSquaresFilled() == 9:
-            if not self.detectBoardWin():
-                return True
+            if self.detectBoardWin(1) or self.detectBoardWin(2):
+                return False
+            return True
         elif self.board.countSquaresFilled() == 8:
             emptysquare = self.board.getEmptySquare()
             self.board.changeSquare(1, emptysquare)
-            if self.detectBoardWin():
+            if self.detectBoardWin(1):
                 self.board.changeSquare(0, emptysquare)
                 return False
             self.board.changeSquare(2, emptysquare)
-            if self.detectBoardWin():
+            if self.detectBoardWin(2):
                 self.board.changeSquare(0, emptysquare)
                 return False
             self.board.changeSquare(0, emptysquare)
