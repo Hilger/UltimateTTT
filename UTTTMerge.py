@@ -44,7 +44,7 @@ class GameCmd(Cmd):
             + "between 1-9 as an argument"
             return
         else:
-            board = args.split()[0] 
+            board = args.split()[0]
         try:
             board = int(board)
         except:
@@ -98,7 +98,8 @@ class GameCmd(Cmd):
             print "Player %s chose square %s on board %s" \
             % (self.game.currentPlayer, square, self.game.board.getNumber())
 
-            if self.game.detectBoardWin():
+            if self.game.detectBoardWin() \
+            and not self.game.wins[self.game.board.getNumber()]:
                 print "Player %s has won board %s!" % \
                     (self.game.currentPlayer, self.game.board.getNumber())
                 self.game.wins[self.game.board.getNumber()] \
@@ -115,7 +116,7 @@ class GameCmd(Cmd):
                 print "Player %s has won the game!" % \
                 self.game.currentPlayer
                 print "Final score -- Player 1: %s, Player 2: %s, Draws: %s" \
-                % (self.game.countWins(1), self.game.countWins(2), 
+                % (self.game.countWins(1), self.game.countWins(2),
                    len(self.game.draws))
                 self.wonLock = True
                 return
@@ -123,7 +124,7 @@ class GameCmd(Cmd):
             elif self.game.detectDrawnGame():
                 print "Game has ended in a draw"
                 print "Final score -- Player 1: %s, Player 2: %s, Draws: %s" \
-                % (self.game.countWins(1), self.game.countWins(2), 
+                % (self.game.countWins(1), self.game.countWins(2),
                    len(self.game.draws))
                 self.drawLock = True
                 return
@@ -154,7 +155,7 @@ class GameCmd(Cmd):
                 print "***Number must be between 1-9"
         except:
             if args[0] == "scores":
-                print "Player 1 won boards: " + self.game.getWinsString(1) 
+                print "Player 1 won boards: " + self.game.getWinsString(1)
                 print "Player 2 won boards: " + self.game.getWinsString(2)
                 print "Drawn boards: " + self.game.getDrawsString()
                 print "Remaining boards: " + self.game.getRemainingString()
@@ -231,7 +232,7 @@ class SingleBoard:
 
     def changeSquare(self, player, square):
         self.singleBoard[square-1] = self.playerIcons[player]
-    
+
     def getSquare(self, square):
         return self.singleBoard[square-1]
 
@@ -246,7 +247,7 @@ class SingleBoard:
             if j == "-":
                 return i+1
 
-    def show(self): 
+    def show(self):
         print "Board #%s\n" % self.boardNumber
         print " %s    %s    %s\n" % \
         (self.singleBoard[0], self.singleBoard[1], self.singleBoard[2])
@@ -299,11 +300,11 @@ class Game:
         if self.countWins(1) == self.countWins(2) and \
         len(self.draws) + self.countWins(1) + self.countWins(2) == 9:
             return True
-        return False 
+        return False
 
     def detectPlayerWin(self):
         if self.wins.values().count(self.currentPlayer) > \
-        (9 - len(self.draws)) / 2: 
+        (9 - len(self.draws)) / 2:
             return True
         return False
 
@@ -312,7 +313,7 @@ class Game:
 
     def checkBoardFilled(self, board):
         board = self.multiBoard.getBoard(board)
-        if any(map(lambda x: x == "-", 
+        if any(map(lambda x: x == "-",
         [board.getSquare(square) for square in range(1, 10)])):
             return False
         return True
