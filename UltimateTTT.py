@@ -5,8 +5,10 @@ class GameCmd(Cmd):
     Ultimate Tic Tac Toe game.  It provides methods to the user to play the
     game, as well to start a new game, exit the game, and to show information
     related to the game."""
+
     def __init__(self):
         Cmd.__init__(self)
+
         self.commands = \
         "Commands --\n\
         choose [1-9] -- select a board (at start and when boards are filled)\n\
@@ -20,8 +22,10 @@ class GameCmd(Cmd):
         show players -- show player icons\n\
         newgame -- start a new game\n\
         exit -- exit the program"
+
         self.intro = "ULTIMATE TIC TAC TOE\n\n" + self.commands + \
         "\n\n --Please start by choosing the first board to be played on\n"
+
         self.rules = \
         """
         Ultimate Tic Tac Toe is a game in which 2 players play a modified \n
@@ -49,6 +53,7 @@ class GameCmd(Cmd):
         Winning the game requires you to win three board in a row, whether \n
         horizontally, vertically, or diagonally.
         """
+
         self.game = Game()
         self.chooseLock = False
         self.wonLock = False
@@ -58,21 +63,21 @@ class GameCmd(Cmd):
     def do_choose(self, args):
         if self.wonLock:
             print "***Game was won by Player %s.\n" % self.game.currentPlayer + \
-            "Type \"exit\" to exit the program or type \"newgame\"" +\
-            " for a new game."
+                  "Type \"exit\" to exit the program or type \"newgame\"" +\
+                  " for a new game."
             return
         if self.drawLock:
             print "***Game ended in a draw\n" + \
-            "Type \"exit\" to exit the program or type \"newgame\"" + \
-            " for a new game."
+                  "Type \"exit\" to exit the program or type \"newgame\"" + \
+                  " for a new game."
             return
         if self.chooseLock:
             print "***You may not choose a board at this time. Use" + \
-            " \"mark [1-9]\" to mark a square instead."
+                  " \"mark [1-9]\" to mark a square instead."
             return
         if not args:
             print "***choose command must include a number" \
-            + "between 1-9 as an argument"
+                  + "between 1-9 as an argument"
             return
         else:
             board = args.split()[0]
@@ -89,7 +94,7 @@ class GameCmd(Cmd):
             else:
                 self.do_show(str(board))
                 print "Player %s has chosen board %s" % \
-                (self.game.currentPlayer, board)
+                      (self.game.currentPlayer, board)
                 print "Please choose a space with \"mark [1-9]\" now"
                 self.game.board = self.game.multiBoard.getBoard(board)
                 self.chooseLock = True
@@ -98,20 +103,20 @@ class GameCmd(Cmd):
     def do_mark(self, args):
         if self.wonLock:
             print "***Game was won by Player %s.\n" % self.game.currentPlayer + \
-            "Type \"exit\" to exit the program or type \"newgame\"" +\
-            " for a new game."
+                  "Type \"exit\" to exit the program or type \"newgame\"" +\
+                  " for a new game."
             return
         if self.drawLock:
             print "***Game ended in a draw\n" + \
-            "Type \"exit\" to exit the program or type \"newgame\"" + \
-            " for a new game."
+                  "Type \"exit\" to exit the program or type \"newgame\"" + \
+                  " for a new game."
             return
         if not self.chooseLock:
             print "***Please choose a board with \"choose [1-9]\" first."
             return
         if not args:
             print "***mark command must include a number between" + \
-            " 1-9 as an argument"
+                  " 1-9 as an argument"
             return
         square = args.split()[0]
         try:
@@ -127,11 +132,12 @@ class GameCmd(Cmd):
             self.game.makeMove(square)
             self.do_show(args="")
             print "Player %s chose square %s on board %s" \
-            % (self.game.currentPlayer, square, self.game.board.getNumber())
+                   % (self.game.currentPlayer, square,
+                      self.game.board.getNumber())
 
             if self.game.detectBoardWin():
                 print "Player %s has won board %s!" % \
-                    (self.game.currentPlayer, self.game.board.getNumber())
+                      (self.game.currentPlayer, self.game.board.getNumber())
                 self.game.wins[self.game.board.getNumber()] \
                     = self.game.currentPlayer
 
@@ -139,25 +145,25 @@ class GameCmd(Cmd):
             not in self.game.draws \
             and not self.game.wins[self.game.board.getNumber()]:
                 print "Board %s has ended in a draw" \
-                    % self.game.board.getNumber()
+                       % self.game.board.getNumber()
                 self.game.draws.append(self.game.board.getNumber())
 
             if self.game.detectPlayerWin(self.game.currentPlayer):
                 print "Player %s has won the game!" % \
-                self.game.currentPlayer
+                      self.game.currentPlayer
                 print "The winning row was on boards %s, %s and %s" % \
-                    self.game.getBoardWinRow()
+                      self.game.getBoardWinRow()
                 print "Final score -- Player 1: %s, Player 2: %s, Draws: %s" \
-                    % (self.game.countWins(1), self.game.countWins(2),
-                    len(self.game.draws))
+                      % (self.game.countWins(1), self.game.countWins(2),
+                      len(self.game.draws))
                 self.wonLock = True
                 return
 
             elif self.game.detectDrawnGame():
                 print "Game has ended in a draw"
                 print "Final score -- Player 1: %s, Player 2: %s, Draws: %s" \
-                    % (self.game.countWins(1), self.game.countWins(2),
-                   len(self.game.draws))
+                      % (self.game.countWins(1), self.game.countWins(2),
+                      len(self.game.draws))
                 self.drawLock = True
                 return
 
@@ -169,7 +175,7 @@ class GameCmd(Cmd):
 
             if self.game.checkBoardFilled(self.game.board.getNumber()):
                 print "Player %s was sent to a full board" \
-                % self.game.currentPlayer + " and must choose a new one"
+                      % self.game.currentPlayer + " and must choose a new one"
                 self.chooseLock = False
 
     def do_show(self, args):
@@ -193,13 +199,13 @@ class GameCmd(Cmd):
                 print "Remaining boards: " + self.game.getRemainingString()
                 if self.game.countWins(1) > self.game.countWins(2):
                     print "Player 1 is winning %s-%s" % \
-                    (self.game.countWins(1), self.game.countWins(2))
+                          (self.game.countWins(1), self.game.countWins(2))
                 elif self.game.countWins(2) > self.game.countWins(1):
                     print "Player 2 is winning %s-%s" % \
-                    (self.game.countWins(2), self.game.countWins(1))
+                          (self.game.countWins(2), self.game.countWins(1))
                 else:
                     print "Game is tied %s-%s" % \
-                    (self.game.countWins(2), self.game.countWins(1))
+                          (self.game.countWins(2), self.game.countWins(1))
             elif args[0] == "commands":
                 print self.commands
             elif args[0] == "rules":
@@ -228,6 +234,7 @@ class GameCmd(Cmd):
 class MultiBoard:
     """An instance of a multi-board contains 9 individual single Tic
     Tac Toe boards, and contains methods for manipulating those boards."""
+
     def __init__(self):
         self.multiBoard = [SingleBoard(i) for i in range(1,10)]
 
@@ -253,7 +260,7 @@ class MultiBoard:
         for cRange in [[1,4], [4, 7], [7, 10]]:
             printRange = range(cRange[0], cRange[1])
             print " %s        %s        %s" \
-                % (printRange[0], printRange[1], printRange[2])
+                  % (printRange[0], printRange[1], printRange[2])
             for rRange in [[1,4], [4, 7], [7, 10]]:
                 print makeLine(cRange, rRange)
             print ""
@@ -266,6 +273,7 @@ class SingleBoard:
     The array contains either "-" for empty, "X" for player 1, or "O" for
     player 2.
     """
+
     def __init__(self, n):
         self.singleBoard = ["-" for i in range(1,10)]
         self.playerIcons = {0: "-", 1: "X", 2 : "O"}
@@ -291,16 +299,17 @@ class SingleBoard:
     def show(self):
         print "Board #%s\n" % self.boardNumber
         print " %s    %s    %s\n" % \
-            (self.singleBoard[0], self.singleBoard[1], self.singleBoard[2])
+              (self.singleBoard[0], self.singleBoard[1], self.singleBoard[2])
         print " %s    %s    %s\n" % \
-            (self.singleBoard[3], self.singleBoard[4], self.singleBoard[5])
+              (self.singleBoard[3], self.singleBoard[4], self.singleBoard[5])
         print " %s    %s    %s\n" % \
-            (self.singleBoard[6], self.singleBoard[7], self.singleBoard[8])
+              (self.singleBoard[6], self.singleBoard[7], self.singleBoard[8])
 
 class Game:
     """The game module contains the game state, including the grid of
     individual Tic Tac Toe boards, the current Player, the boards won by
     each player, and the boards drawn."""
+
     def __init__(self):
         self.multiBoard = MultiBoard()
         self.started = False
@@ -388,7 +397,7 @@ class Game:
         return False
 
     def getBoardWinRow(self):
-        # Gets the winning board row
+        # Returns the winning board row as a tuple
         currentPlayerWins = [k for k,v in self.wins.iteritems() \
                      if v == self.currentPlayer]
         rows = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8],
@@ -439,6 +448,47 @@ class Game:
         if remaining:
             return ", ".join(remaining)
         return ""
+
+
+def test():
+
+    # TEST 1 - DETECT DRAWN GAME
+    game = Game()
+    game.draws = [2, 5, 7, 9]
+    assert game.detectDrawnGame() == True
+    assert game.detectPlayerWin(1) == False
+    assert game.detectPlayerWin(2) == False
+
+    # TEST 2 - DETECT WON GAME
+    game = Game()
+    game.wins = {1:1,2:1,3:1,4:0,5:0,6:0,7:0,8:0,9:0}
+    assert game.detectPlayerWin(1) == True
+    assert game.detectPlayerWin(2) == False
+    assert game.detectDrawnGame() == False
+
+    # TEST 3 - DETECT DRAWN BOARD
+    game = Game()
+    game.board = game.multiBoard.getBoard(1)
+    game.board.singleBoard = ["-","O","X","X","X","O","O","X","O"]
+    game.currentPlayer = 1
+    assert game.detectBoardDraw() == True
+    assert game.detectBoardWin() == False
+
+    # TEST 4 - DETECT WON BOARD
+    game = Game()
+    game.board = game.multiBoard.getBoard(1)
+    game.board.singleBoard = ["X","X","X","-","-","-","-","-","-"]
+    game.currentPlayer = 1
+    assert game.detectBoardDraw() == False
+    assert game.detectBoardWin() == True
+
+    game.currentPlayer = 2
+    assert game.detectBoardDraw() == False
+    assert game.detectBoardWin() == False
+
+    # TESTS PASS
+    print "Tests pass"
+
 
 if __name__ == "__main__":
     game = GameCmd()
